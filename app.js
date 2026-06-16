@@ -1,6 +1,18 @@
 import express from "express";
+import morgan from "morgan";
+import getUserFromToken from "#middleware/getUserFromToken";
+import tasksRouter from "#api/tasks";
+import usersRouter from "#api/users";
+
 const app = express();
-export default app;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(getUserFromToken);
+app.use(morgan("dev"));
+
+app.use("/users", usersRouter);
+app.use("/tasks", tasksRouter);
 
 app.use((err, req, res, next) => {
   switch (err.code) {
@@ -21,3 +33,5 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send("Sorry! Something went wrong.");
 });
+
+export default app;
